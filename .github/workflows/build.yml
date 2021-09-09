@@ -1,0 +1,45 @@
+name: build                          # Name of this workflow
+on:
+  push:
+    tags:
+      - '*'            # Run on push & pull_request regardless of any branch
+jobs:
+  buildJob:                          # Name of the job
+    runs-on: ubuntu-latest         # I'm running on Windows (for this example).
+    steps:
+      - uses: actions/checkout@v2    # This custom action will clone the repository.
+      - name: 'Install Modules'
+        uses: borales/actions-yarn@v2.3.0
+        with:
+          cmd: install # will run `yarn install` command
+      - name: Building Releases
+        run: |
+          sudo yarn run dist
+      - name: Generate Changelog
+        run: echo "# Good things have arrived" > ${{ github.workspace }}-CHANGELOG.txt
+      #      - name: Archive Win x64 Release
+      #        uses: papeloto/action-zip@v1
+      #        with:
+      #          type: 'zip'
+      #          dest: 'release-win-x64.zip'
+      #          files: 'dist/*win-x64*'
+      #      - name: Archive Win x86 Release
+      #        uses: thedoctor0/zip-release@master
+      #        with:
+      #          type: 'zip'
+      #          dest: 'release-win-x86.zip'
+      #          path: 'dist/*win-x86*'
+      #          exclusions: '*.git* /*node_modules/* .editorconfig'
+      - name: Archive Mac Release
+        id: zip
+        uses: Roslovets-Inc/zip-npm-files@v1
+        with:
+          files: dist/Flask-undefined-mac-x64
+          archive: release-mac.zip
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          body_path: ${{ github.workspace }}-CHANGELOG.txt
+          files: |
+            ${{ steps.zip.outputs.archive }}

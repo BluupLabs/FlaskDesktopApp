@@ -1,0 +1,14 @@
+{
+  "name": "Flask",
+  "main": "main.js",
+  "scripts": {
+    "dist": "build --tasks win-x86,win-x64,mac-x64 --mirror https://dl.nwjs.io/ .",
+    "start": "/Users/matty/Documents/Tools/nwjs/nwjs.app/Contents/MacOS/nwjs ."
+  },
+  "devDependencies": {
+    "nwjs-builder-phoenix": "^1.15.0"
+  },
+  "build": {
+    "nwVersion": "0.56.0"
+  }
+}
